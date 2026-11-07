@@ -1,7 +1,7 @@
 # WebXR AR: объект в центре поля зрения (Unity 6 + WebXR Export)
 
 AR-сцена на Unity **6000.6.7f1** (URP), собранная в WebGL с пакетом
-[De-Panther/unity-webxr-export](https://github.com/De-Panther/unity-webxr-export) **0.25.0**.
+[De-Panther/unity-webxr-export](https://github.com/De-Panther/unity-webxr-export) **0.25.0 + исправления для Unity 6.5+ из master (коммит `1f7a06c`)**.
 При старте куб появляется в центре поля зрения пользователя (viewer-space). Это происходит и в обычном браузере, и после входа в AR-сессию.
 
 **Демо (HTTPS, GitHub Pages):** https://batir8888.github.io/WebXRProject/
@@ -10,7 +10,7 @@ AR-сцена на Unity **6000.6.7f1** (URP), собранная в WebGL с п
 
 | Требование | Реализация |
 |---|---|
-| Подключён unity-webxr-export | `com.de-panther.webxr` и `com.de-panther.webxr-interactions` 0.25.0 из scoped registry OpenUPM (`Packages/manifest.json`). В XR Plug-in Management для WebGL назначен loader `WebXR.WebXRLoader` и включён Initialize on Startup (`Assets/XR/`). |
+| Подключён unity-webxr-export | `com.de-panther.webxr` и `com.de-panther.webxr-interactions` подключены как git-пакеты из репозитория De-Panther, закреплённые на коммите `1f7a06c` (`Packages/manifest.json`). В XR Plug-in Management для WebGL назначен loader `WebXR.WebXRLoader` и включён Initialize on Startup (`Assets/XR/`). |
 | Камера WebXR и WebXRController | В сцене `Assets/Scenes/ARScene.unity` стоит префаб `WebXRCameraSet` из WebXR Interactions: Main Camera с `WebXRCameraSettings` и `handL`/`handR` с `WebXRController`. Риг находится в начале координат пространства WebXRManager. |
 | Объект в центре экрана при старте | Объект `XRSpaceRoot` со скриптом `ViewerSpacePlacer` ставит префаб `ARCube` (куб 20 см) в точку `camera.position + camera.forward × 0.8 м`. Это делается в `Start` и повторно через 3 кадра после `WebXRManager.OnXRChange` (вход в AR/VR и выход), когда поза головы уже получена. |
 | Шаблон WebXRTemplate | WebGL-шаблон `WebXRFullView2020` скопирован из пакета в `Assets/WebGLTemplates/`. В нём есть кнопки AR и VR. |
@@ -19,6 +19,13 @@ AR-сцена на Unity **6000.6.7f1** (URP), собранная в WebGL с п
 
 Настройки AR (`Assets/XR/Settings/WebXRSettings.asset`): обязательное reference space — `local`, опциональная фича — `hit-test`.
 `local` выбран вместо `local-floor`, потому что его поддерживает больше мобильных устройств. Начало координат тогда совпадает с положением головы в момент старта сессии.
+
+## Почему не OpenUPM 0.25.0
+
+В релизе 0.25.0 на OpenUPM (май 2026) `webxr.jspre` обращается к глобальному объекту Emscripten `Browser`. В Unity 6.5+ его нет: main loop перенесён в `MainLoop`.
+Из-за этого сборка падает при старте с ошибкой `ReferenceError: Browser is not defined`.
+Исправления (PR #446 и #447) уже есть в master, но в релиз пока не вошли. Поэтому пакеты взяты из git на коммите `1f7a06c`.
+Когда выйдет 0.26+, можно вернуть scoped registry OpenUPM.
 
 ## Как пересобрать
 
