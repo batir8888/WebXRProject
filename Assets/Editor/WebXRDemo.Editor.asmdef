@@ -3,6 +3,9 @@
   "references": [
     "WebXRDemo",
     "WebXR",
+    "WebXR.XRITBridge",
+    "Unity.InputSystem",
+    "Unity.XR.Interaction.Toolkit",
     "Unity.XR.Management",
     "Unity.XR.Management.Editor",
     "Unity.RenderPipelines.Core.Runtime",
